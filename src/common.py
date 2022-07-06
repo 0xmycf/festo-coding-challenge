@@ -1,6 +1,5 @@
 #! /usr/bin/env python3.10
 
-
 from abc        import ABC, abstractmethod
 from dotenv     import load_dotenv
 from typing     import Callable, TypeVar
@@ -8,11 +7,15 @@ from typing     import Callable, TypeVar
 import os
 import re
 
-
 # TypeVars for common function definitions
 T = TypeVar('T')
 S = TypeVar('S')
 
+def lmap(f: Callable[[T], S], x: list[T]) -> list[S]:
+    """
+    Maps the function f to the argument x
+    """
+    return list(map(f, x))
 
 def getos(key: str) -> str:
     """
