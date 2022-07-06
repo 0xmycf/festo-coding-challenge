@@ -1,11 +1,13 @@
 #! /usr/bin/env python3.10
 
+import os
+
 from dotenv import load_dotenv
 from src.common import Solution, getos
 load_dotenv()
 
 # load all scripts
-import src.intro
+from src import *
 
 INSTANCE1 = Solution()
 

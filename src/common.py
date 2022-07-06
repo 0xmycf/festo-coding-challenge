@@ -1,11 +1,18 @@
 #! /usr/bin/env python3.10
 
-from abc import ABC, abstractmethod
+
+from abc        import ABC, abstractmethod
+from dotenv     import load_dotenv
+from typing     import Callable, TypeVar
+
 import os
 import re
-from typing import Callable
 
-from dotenv import load_dotenv
+
+# TypeVars for common function definitions
+T = TypeVar('T')
+S = TypeVar('S')
+
 
 def getos(key: str) -> str:
     """
@@ -25,9 +32,11 @@ class Solution:
             cls.__lst = {}
         return cls._instance
 
-    # holds all arguments as keys to functions for the solutions
     @property
     def ans_dic(self) -> dict[str, Callable]:
+        """
+        holds all arguments as keys to functions for the solutions
+        """
         return self.__lst
 
     def solution(self, key: str):
@@ -61,7 +70,7 @@ class Solution:
 class Solver(ABC):
     """
     This is the solution base class
-    This is to ensure all solutions implement all necessary functions
+    This ensures all solutions implement all necessary functions
     """
 
     @staticmethod
@@ -83,3 +92,16 @@ class Solver(ABC):
     @staticmethod
     @abstractmethod
     def provide_args(*args, **kwargs): raise NotImplementedError
+
+    @staticmethod
+    @abstractmethod
+    def provide_kwargs(*args, **kwargs): raise NotImplementedError
+
+def returnIfNonef(x: T, f: Callable[[T], S] | None) -> T | S:
+    """
+    Checks if the provided function f is None and returns x if so
+    Otherwise it returns f(x)
+    """
+    if f is None:
+        return x
+    return f(x)
