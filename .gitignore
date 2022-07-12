@@ -735,3 +735,4 @@ cython_debug/
 # End of https://www.toptal.com/developers/gitignore/api/python
 res/
 .env
+res/outliers.txt

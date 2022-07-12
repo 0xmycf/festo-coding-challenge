@@ -4,7 +4,7 @@ import traceback
 import sys
 
 from dotenv import load_dotenv
-from src.common import Solution, getos
+from src.common import Solution, Unstoppable, getos
 load_dotenv()
 
 # load all scripts
@@ -29,6 +29,9 @@ for key, val in INSTANCE.ans_dic.items():
             print(val(getos(key.replace(':','')), *INSTANCE.ans_dic[f'provide_args{pure_key}'](), **kwargs))
         else:
             print(val(*INSTANCE.ans_dic[f'provide_args{pure_key}']()))
+
+    except Unstoppable as e:
+        raise BaseException(e)
 
     except NotImplementedError:
         print(f'{key} not implemented yet')

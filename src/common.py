@@ -11,6 +11,7 @@ import re
 T = TypeVar('T')
 S = TypeVar('S')
 
+
 def lmap(f: Callable[[T], S], x: list[T]) -> list[S]:
     """
     Maps the function f to the argument x
@@ -25,6 +26,13 @@ def getos(key: str) -> str:
         load_dotenv()
 
     return os.environ.get(key, default="")
+
+class Unstoppable(Exception):
+    """
+    This expression should be thrown when you want the program to stop the execution
+    All other exceptions will be caught by the __main__ file
+    """
+    pass
 
 class Solution:
 

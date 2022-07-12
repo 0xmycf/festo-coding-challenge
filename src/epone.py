@@ -2,10 +2,13 @@
 
 import re
 
-from typing import Callable, Literal, Union
+import pandas as pd
+import plotly.graph_objects as go
+
+from typing import Union
 from functools import cache
 
-from src.common import Solution, Solver, retOrFunction, lmap
+from src.common import Solution, Solver, Unstoppable, retOrFunction, lmap
 from src.linear import Coord
 
 I = Solution()
@@ -40,8 +43,62 @@ class EpisodeOne(Solver):
         return retOrFunction(ans, fn)
 
     @staticmethod
-    def part2(osvar, *args, **kwargs):
-        ...
+    def __prov_outliers():
+        with open('res/outliers.txt', 'r') as f:
+            return list(map(lambda x: x.strip(), f.readlines()))
+
+    outliers = __prov_outliers()
+
+    @staticmethod
+    def __validate_map(themap):
+        for name in EpisodeOne.outliers:
+            try:
+                _ = themap[name]
+            except KeyError:
+                raise Unstoppable(f"{name} not in map")
+
+    @staticmethod
+    def part2(osvar, *args, fn=None, **kwargs):
+        files: FileDict          = args[0]
+        themap: dict[str, Coord] = args[1]
+        if osvar == 'True':
+            data_ = {}
+            EpisodeOne.__validate_map(themap)
+            for k, v in themap.items():
+                if k in EpisodeOne.outliers:
+                    continue
+
+                data_['name'] = data_.get('name', []) + [k]
+                data_['coord'] = data_.get('coord', []) + [v]
+
+            df = pd.DataFrame.from_dict(data_)
+            marker_data = go.Scatter3d(
+                x=df['coord'].apply(lambda x: x.x),
+                y=df['coord'].apply(lambda x: x.y),
+                z=df['coord'].apply(lambda x: x.z),
+                mode='markers',
+                hovertext=df['name'],
+                marker=dict(
+                    size=2,
+                    color='blue',
+                    colorscale='Viridis',
+                    opacity=0.8
+                )
+            )
+            data = [marker_data]
+            fig = go.Figure(data=data)
+            fig.show()
+
+        ans = []
+        for file in files:
+            id_, home = file[EpisodeOne.__ID], file[EpisodeOne.__HOME]
+            if home not in EpisodeOne.outliers:
+                continue
+            # pyright complains...
+            if isinstance(id_, str):
+                ans.append(int(id_))
+
+        return retOrFunction(ans, fn)
 
     @staticmethod
     def part3(_os, files, _p2, logs: dict[str, list[dict]], way, *args, fn=None, debug=False, **kwargs):
@@ -137,7 +194,11 @@ class EpisodeOne(Solver):
         return retOrFunction(ans, fn)
 
     @staticmethod
-    def part4(*args, **kwargs): ...
+    def part4(*args, **kwargs):
+        id_ = set(EpisodeOne.part1(0, *args, **kwargs)) & set( EpisodeOne.part2('False', *args, **kwargs) ) & set( EpisodeOne.part3(0, *args, **kwargs) )
+        for file in args[0]:
+            if EpisodeOne.__getId(file) in id_:
+                return EpisodeOne.__getName(file)
 
     @staticmethod
     def provide_args(*args, **kwargs):
@@ -234,7 +295,7 @@ class EpisodeOne(Solver):
                     match first:
                         case 'i': one, two = ('in', lmap(lambda x: x.strip(), b.replace("in:", "").strip().split(",")))
                         case 'o': one, two = ('out', lmap(lambda x: x.strip(), b.replace("out:", "").strip().split(",")))
-                        case _  : raise Exception("Unknown block type: " + b)
+                        case _  : raise Unstoppable("Unknown block type: " + b)
                     tmp.update({
                         one: two
                         })
