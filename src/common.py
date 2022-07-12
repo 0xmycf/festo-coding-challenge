@@ -74,6 +74,13 @@ class Solver(ABC):
     """
     This is the solution base class
     This ensures all solutions implement all necessary functions
+
+    All functions can take a kwarg 'debug' which is a boolean indicating if
+    the code is run in debug mode (run the code with 'python .  d(ebug)')
+
+    All other args or kwargs are passed through the functions via the
+    provide_args and provide_kwargs functions
+    It might be a good idea to add the @cache decorator to the functions or subfunctions
     """
 
     @staticmethod
@@ -100,7 +107,7 @@ class Solver(ABC):
     @abstractmethod
     def provide_kwargs(*args, **kwargs): raise NotImplementedError
 
-def returnIfNonef(x: T, f: Callable[[T], S] | None) -> T | S:
+def retOrFunction(x: T, f: Callable[[T], S] | None) -> T | S:
     """
     Checks if the provided function f is None and returns x if so
     Otherwise it returns f(x)

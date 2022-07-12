@@ -3,31 +3,31 @@
 import csv
 
 from functools import reduce
-from src.common import Solution, getos, Solver, returnIfNonef
+from src.common import Solution, getos, Solver, retOrFunction
 
 INSTANCE = Solution()
 
 @INSTANCE.solution("INTROP")
 class Intro(Solver):
     @staticmethod
-    def part1(magic_num: str, *reader, fn=None):
+    def part1(magic_num: str, *reader, fn=None, **kwargs):
         """
         Puzzle 1
         """
         ans = list(map(lambda e: int(e[1]), filter(lambda entry: magic_num in entry[1], reader)))
-        return returnIfNonef(ans, fn)
+        return retOrFunction(ans, fn)
 
     @staticmethod
-    def part2(module: str, *reader, fn=None):
+    def part2(module: str, *reader, fn=None, **kwargs):
         """
         Puzzle 2
         """
         fmod = 0b10000000 >> (int(module) - 1)
         ans =  list(map(lambda e: int(e[1]), filter(lambda row: (int(row[2], 10)) & fmod == fmod, reader)))
-        return returnIfNonef(ans, fn)
+        return retOrFunction(ans, fn)
 
     @staticmethod
-    def part3(time: str, *reader, fn=None):
+    def part3(time: str, *reader, fn=None, **kwargs):
         """
         Puzzle 3
         """
@@ -36,7 +36,7 @@ class Intro(Solver):
             frow = row[3].replace(':', '')
             return frow != '9999' and int(frow) < int(time)
         ans =  list(map(lambda e: int(e[1]), filter(lam, reader)))
-        return returnIfNonef(ans, fn)
+        return retOrFunction(ans, fn)
 
     @staticmethod
     def provide_args(*args, **kwargs):
